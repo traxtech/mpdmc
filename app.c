@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "dataset.h"
+#include "picolcd.h"
 
 static dataset_t *dataset;
 
