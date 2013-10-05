@@ -30,6 +30,11 @@
 #define OUT_REPORT_CMD_DATA		0x96
 
 static usb_dev_handle *lcd;
+static cairo_surface_t *play_image;
+static cairo_surface_t *pause_image;
+static cairo_surface_t *stop_image;
+static cairo_surface_t *database_image;
+static cairo_surface_t *volctrl_image;
 
 static void picolcd_send(unsigned char *data, int size)
 {
@@ -182,6 +187,12 @@ int picolcd_init() {
     char manufacturer[1024];
     char serialnumber[1024];
 
+    play_image = cairo_image_surface_create_from_png("icons/play.png");
+    pause_image = cairo_image_surface_create_from_png("icons/pause.png");
+    stop_image = cairo_image_surface_create_from_png("icons/stop.png");
+    database_image = cairo_image_surface_create_from_png("icons/database.png");
+    volctrl_image = cairo_image_surface_create_from_png("icons/volctrl.png");
+
     printf("PicoLCD: Scanning USB devices\n");
     usb_init();
     usb_find_busses();
@@ -246,13 +257,33 @@ void picolcd_update(dataset_t *ds) {
     cairo_set_source_rgb (cr, 1, 1, 1);
 
     if(ds->state == DATASET_STATE_PLAYING) {
-                cairo_move_to(cr, 4, 4);
-                cairo_line_to(cr, 14, 10);
-                cairo_line_to(cr, 4, 16);
-                cairo_line_to(cr, 4, 4);
-                cairo_close_path(cr);
-                cairo_fill(cr);
-            }
+        cairo_save(cr);
+        cairo_set_source_surface (cr, play_image, 0, 0);
+        cairo_paint (cr);
+        cairo_restore(cr);
+    } else if(ds->state == DATASET_STATE_PAUSED) {
+        cairo_save(cr);
+        cairo_set_source_surface (cr, pause_image, 0, 0);
+        cairo_paint (cr);
+        cairo_restore(cr);
+    } else if(ds->state == DATASET_STATE_STOPPED) {
+        cairo_save(cr);
+        cairo_set_source_surface (cr, stop_image, 0, 0);
+        cairo_paint (cr);
+        cairo_restore(cr);
+    }
+    if(ds->db_updating) {
+        cairo_save(cr);
+        cairo_set_source_surface (cr, database_image, 224, 0);
+        cairo_paint (cr);
+        cairo_restore(cr);        
+    }
+    if(ds->volume >= 0) {
+        cairo_save(cr);
+        cairo_set_source_surface (cr, volctrl_image, 240, 0);
+        cairo_paint (cr);
+        cairo_restore(cr);        
+    }
 
             cairo_move_to (cr, 20, 16);
             snprintf(buffer, sizeof(buffer), "%02i:%02i / %02i:%02i",
@@ -262,11 +293,6 @@ void picolcd_update(dataset_t *ds) {
                                 ds->total_time % 60);
             cairo_show_text (cr, buffer);
 		
-            if(ds->volume >= 0) {
-                snprintf(buffer, sizeof(buffer), "V:%03i%%", ds->volume);
-                cairo_move_to (cr, 190, 16);
-                cairo_show_text (cr, buffer);
-            }
             cairo_select_font_face (cr, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
             cairo_set_font_size (cr, 16);
             

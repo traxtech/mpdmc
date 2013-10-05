@@ -76,4 +76,8 @@ void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
         if(what&MPD_CST_ELAPSED_TIME){
             ds->elapsed_time = mpd_status_get_elapsed_song_time(mi);
         }
+    if(what&MPD_CST_UPDATING)
+    {
+        ds->db_updating = mpd_status_db_is_updating(mi);
+    }
 }

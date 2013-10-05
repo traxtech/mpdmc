@@ -31,6 +31,7 @@ typedef struct {
     char *song_title;
     char *song_album;
     int volume;
+    int db_updating;
 } dataset_t;
 
 void dataset_init(dataset_t *ds);
