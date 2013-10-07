@@ -23,7 +23,10 @@
 #include <string.h>
 
 #include "dataset.h"
+
+#ifdef WITH_PICOLCD
 #include "picolcd.h"
+#endif // WITH_PICOLCD
 
 static dataset_t *dataset;
 
@@ -47,37 +50,65 @@ void status_changed_callback(MpdObj *mi, ChangedStatusType what)
 
 int main(int argc, char **argv)
 {
+
+    /* Get MPD configuration */
+    char *mpd_host = getenv("MPDMC_MPD_HOST");
+    if(mpd_host == NULL)
+    {
+        mpd_host = "localhost";
+    }
+    char *mpd_port = getenv("MPDMC_MPD_PORT");
+    if(mpd_port == NULL)
+    {
+        mpd_port = "6600";
+    } else if (atoi(mpd_port) <= 0) {
+        printf("Invalid MPD port '%s'\n", mpd_port);
+        return 1;
+    }
+    char *mpd_password = getenv("MPDMC_MPD_PASSWORD");
+    if(mpd_password == NULL)
+    {
+        mpd_password = "";
+    }
+    /* Allocate the dataset */
     dataset = malloc(sizeof(dataset_t));
     if(!dataset) {
-        fprintf(stderr, "Failed to allocate memory\n");
+        printf("Failed to allocate memory\n");
         return 1;
     }
     dataset_init(dataset);
-
+    /* Initialize the modules */
+    #ifdef WITH_PICOLCD
     if(!picolcd_init()) {
-        fprintf(stderr, "Failed to init PicoLCD\n");
+        printf("Failed to init PicoLCD\n");
         return 2;
     }
-
-    /* Connect to mpd */
-    MpdObj *obj = mpd_new("localhost", 6600, ""); // get from mpd.conf passed as argument or shell variables ?
+    #endif // WITH_PICOLCD
+    /* Connect to MPD */
+    printf("Connecting to MPD host='%s' port='%d', password='%s'\n", mpd_host, atoi(mpd_port), mpd_password);
+    MpdObj *obj = mpd_new(mpd_host, atoi(mpd_port), mpd_password);
     mpd_signal_connect_error(obj,(ErrorCallback)error_callback, 0);
     mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed_callback, 0);
-    
-
+    /* Proces MPD events */
     if(!mpd_connect(obj))
     {
+        printf("Connected to MPD, sending password\n");
         mpd_send_password(obj);
-
+	printf("Password sent, entering main event loop\n");
         while(!usleep(100000))
         {
             mpd_status_update(obj);
+            #ifdef WITH_PICOLCD
             picolcd_update(dataset);
+            #endif // WITH_PICOLCD
         }
-        
+    } else {
+        printf("Failed to connect to MPD\n");
     }
     mpd_free(obj);
+    #ifdef WITH_PICOLCD
     picolcd_close();
+    #endif // WITH_PICOLCD
     return 0;
 }
 

@@ -1,17 +1,21 @@
-
 # Quiet (set to @ for a quite compile)
 #Q	?= @
 Q	?=
 
 # Build Tools
 CC 	:= gcc
-CFLAGS := -I. -O2 -Wall -funroll-loops -ffast-math $(shell pkg-config --cflags libmpd) $(shell pkg-config --cflags cairo-xlib libusb)
+CFLAGS := -I. -O2 -Wall -funroll-loops -ffast-math $(shell pkg-config --cflags libmpd)
 LD := gcc
 LDFLAGS := -O2 -Wall
 
-APP_OBJECTS = app.o dataset.o picolcd.o
-APP_LIBS = $(shell pkg-config --libs libmpd) $(shell pkg-config --libs cairo-xlib libusb)
+APP_OBJECTS = app.o dataset.o
+APP_LIBS = $(shell pkg-config --libs libmpd)
 APP_BIN = mpdmc
+
+# PicoLCD module
+CFLAGS += -DWITH_PICOLCD $(shell pkg-config --cflags cairo-xlib libusb)
+APP_OBJECTS += picolcd.o
+APP_LIBS += $(shell pkg-config --libs cairo-xlib libusb)
 
 .PHONY: all clean dep load_default
 
