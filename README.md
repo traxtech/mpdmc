@@ -15,4 +15,9 @@ Dependencies:
 - libusb (package libusb-1.0-0-dev on Ubuntu 12.04)
 - cairo (package libcairo2-dev on Ubuntu 12.04)
 
-This software is still in development. Use it at your own risks. It is not configurable and it assumes a MPD server on localhost, port 6600 and no password.
+Configuration is done with environment variables :
+- MPDMC_MPD_HOST : MPD host (default: localhost)
+- MPDMC_MPD_PORT : MPD port (default: 6600)
+- MPDMC_MPD_PASSWORD : MPD password (default: empty)
+
+This software is still in development. Use it at your own risks.
