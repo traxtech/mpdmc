@@ -40,7 +40,7 @@ clean:
 	$(Q)rm -vf *.o *.so $(APP_BIN) Makefile.dep
 
 run: all
-	MPDCAST_MPD_HOSTNAME=localhost MPDCAST_MPD_PORT=6600 ./mpdcli
+	./mpdcli
 
 install: all
 	@echo Installing...
