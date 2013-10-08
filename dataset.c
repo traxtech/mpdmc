@@ -29,6 +29,12 @@ void dataset_init(dataset_t *ds) {
     ds->song_title = 0;
     ds->song_album = 0;
     ds->volume = 0;
+	ds->samplerate = 0;
+	ds->bitdepth = 0;
+	ds->randomplayback = 0;
+	//ds->consumeplayback = 0;
+	ds->repeatplayback = 0;
+	ds->bitrate = 0;
 }
 
 void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
@@ -46,8 +52,9 @@ void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
                         if(ds->song_album)
                             free(ds->song_album);
                         ds->song_album = strdup(song->album);
-
                 }
+				ds->samplerate = mpd_status_get_samplerate(mi);
+				ds->bitdepth = mpd_get_status_get_bits(mi);
         }
 
         if(what&MPD_CST_STATE)
@@ -76,8 +83,20 @@ void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
         if(what&MPD_CST_ELAPSED_TIME){
             ds->elapsed_time = mpd_status_get_elapsed_song_time(mi);
         }
-    if(what&MPD_CST_UPDATING)
-    {
-        ds->db_updating = mpd_status_db_is_updating(mi);
-    }
+		if(what&MPD_CST_UPDATING)
+		{
+			ds->db_updating = mpd_status_db_is_updating(mi);
+		}
+		if(what&MPD_CST_BITRATE)
+		{
+			ds->bitrate = mpd_status_bitrate(mi);
+		}
+		if(what&MPD_CST_REPEAT
+		{
+			ds->repeatplayback = mpd_player_get_repeat(mi);
+		}
+		if(what&MPD_CST_RANDOM)
+		{
+			ds->randomplayback = mpd_player_get_random(mi);
+		}
 }

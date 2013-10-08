@@ -1,0 +1,5 @@
+Added - 2013 10 08
+	- dataset.h.c - bitrate, samplerate, bitdepth change status
+	- dataset.h.c  - random & repeat change status
+	- mpdmc.conf - start support for a config file
+	

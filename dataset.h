@@ -32,6 +32,12 @@ typedef struct {
     char *song_album;
     int volume;
     int db_updating;
+	unsigned int samplerate;
+	int bitdepth;
+	int randomplayback;
+	//int consumeplayback;
+	int repeatplayback;
+	int bitrate;
 } dataset_t;
 
 void dataset_init(dataset_t *ds);

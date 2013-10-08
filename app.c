@@ -25,6 +25,9 @@
 #include "dataset.h"
 #include "picolcd.h"
 
+#define MPD_HOST localhost
+#define MPD_PORT 6600
+
 static dataset_t *dataset;
 
 /*
@@ -60,7 +63,7 @@ int main(int argc, char **argv)
     }
 
     /* Connect to mpd */
-    MpdObj *obj = mpd_new("localhost", 6600, ""); // get from mpd.conf passed as argument or shell variables ?
+    MpdObj *obj = mpd_new(MPD_HOST, MPD_PORT, ""); // get from mpd.conf passed as argument or shell variables ?
     mpd_signal_connect_error(obj,(ErrorCallback)error_callback, 0);
     mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed_callback, 0);
     
