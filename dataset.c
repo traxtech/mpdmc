@@ -32,7 +32,8 @@ void dataset_init(dataset_t *ds) {
 	ds->samplerate = 0;
 	ds->bitdepth = 0;
 	ds->randomplayback = 0;
-	//ds->consumeplayback = 0;
+	ds->consumeplayback = 0;
+	ds->singleplayback = 0;
 	ds->repeatplayback = 0;
 	ds->bitrate = 0;
 }
@@ -98,5 +99,13 @@ void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
 		if(what&MPD_CST_RANDOM)
 		{
 			ds->randomplayback = mpd_player_get_random(mi);
+		}
+		if(what&MPD_CST_SINGLE_MODE)
+		{
+			ds->singleplayback = mpd_player_get_single(mi);
+		}
+		if(what&MPD_CST_CONSUME_MODE)
+		{
+			ds->consumeplayback = mpd_player_get_consume(mi);
 		}
 }

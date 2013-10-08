@@ -35,7 +35,8 @@ typedef struct {
 	unsigned int samplerate;
 	int bitdepth;
 	int randomplayback;
-	//int consumeplayback;
+	int consumeplayback;
+	int singleplayback;
 	int repeatplayback;
 	int bitrate;
 } dataset_t;
