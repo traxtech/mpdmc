@@ -29,9 +29,14 @@ void dataset_init(dataset_t *ds) {
     ds->song_title = 0;
     ds->song_album = 0;
     ds->volume = 0;
+    ds->playback = DATASET_PLAYBACK_UNKNOWN;
+    ds->bitrate = 0;
+    ds->channels = 0;
+    ds->samplerate = 0;
 }
 
 void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
+    ds->bitrate = mpd_status_get_bitrate(mi);
     if(what&MPD_CST_SONGID)
         {
                 mpd_Song *song = mpd_playlist_get_current_song(mi);
@@ -46,8 +51,9 @@ void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
                         if(ds->song_album)
                             free(ds->song_album);
                         ds->song_album = strdup(song->album);
-
                 }
+                ds->channels = mpd_status_get_channels(mi);
+                ds->samplerate = mpd_status_get_samplerate(mi);
         }
 
         if(what&MPD_CST_STATE)
@@ -76,8 +82,16 @@ void dataset_update(dataset_t *ds, MpdObj *mi, ChangedStatusType what) {
         if(what&MPD_CST_ELAPSED_TIME){
             ds->elapsed_time = mpd_status_get_elapsed_song_time(mi);
         }
-    if(what&MPD_CST_UPDATING)
+        if(what&MPD_CST_UPDATING)
+        {
+            ds->db_updating = mpd_status_db_is_updating(mi);
+        }
+    if(what&MPD_CST_SINGLE_MODE)
     {
-        ds->db_updating = mpd_status_db_is_updating(mi);
+        ds->playback = DATASET_PLAYBACK_SINGLE;
+    }
+    if(what&MPD_CST_CONSUME_MODE)
+    {
+        ds->playback = DATASET_PLAYBACK_CONSUME;
     }
 }

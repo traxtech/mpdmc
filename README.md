@@ -12,8 +12,9 @@ Compilation and usage:
 
 Dependencies:
 - libmpd (package libmpd-dev on Ubuntu 12.04)
-- libusb (package libusb-1.0-0-dev on Ubuntu 12.04)
-- cairo (package libcairo2-dev on Ubuntu 12.04)
+- libusb for the PicoLCD module (package libusb-1.0-0-dev on Ubuntu 12.04)
+- cairo for the PicoLCD module (package libcairo2-dev on Ubuntu 12.04)
+- libmosquitto for the Mosquitto module (package libmosquitto0-dev on Ubuntu 12.04)
 
 Configuration is done with environment variables :
 - MPDMC_MPD_HOST : MPD host (default: localhost)

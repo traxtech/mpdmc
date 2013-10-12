@@ -27,6 +27,9 @@
 #ifdef WITH_PICOLCD
 #include "picolcd.h"
 #endif // WITH_PICOLCD
+#ifdef WITH_MOSQUITTO
+#include "mosquitto.h"
+#endif // WITH_MOSQUITTO
 
 static dataset_t *dataset;
 
@@ -80,10 +83,17 @@ int main(int argc, char **argv)
     /* Initialize the modules */
     #ifdef WITH_PICOLCD
     if(!picolcd_init()) {
-        printf("Failed to init PicoLCD\n");
-        return 2;
+        printf("Failed to init the PicoLCD module\n");
+        return 1;
     }
     #endif // WITH_PICOLCD
+    #ifdef WITH_MOSQUITTO
+    if(!mosquitto_init()) {
+        printf("Failed to init the Mosquitto module\n");
+        return 1;
+    }
+    #endif // WITH_MOSQUITTO
+
     /* Connect to MPD */
     printf("Connecting to MPD host='%s' port='%d', password='%s'\n", mpd_host, atoi(mpd_port), mpd_password);
     MpdObj *obj = mpd_new(mpd_host, atoi(mpd_port), mpd_password);
@@ -101,6 +111,9 @@ int main(int argc, char **argv)
             #ifdef WITH_PICOLCD
             picolcd_update(dataset);
             #endif // WITH_PICOLCD
+            #ifdef WITH_MOSQUITTO
+            mosquitto_update(dataset);
+            #endif // WITH_MOSQUITTO
         }
     } else {
         printf("Failed to connect to MPD\n");
@@ -109,6 +122,9 @@ int main(int argc, char **argv)
     #ifdef WITH_PICOLCD
     picolcd_close();
     #endif // WITH_PICOLCD
+    #ifdef WITH_MOSQUITTO
+    mosquitto_close();
+    #endif // WITH_MOSQUITTO
     return 0;
 }
 

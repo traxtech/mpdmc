@@ -23,6 +23,8 @@
 
 enum state_t { DATASET_STATE_STOPPED = 0, DATASET_STATE_PLAYING = 1, DATASET_STATE_PAUSED = 2};
 
+enum playback_t {DATASET_PLAYBACK_UNKNOWN = 0, DATASET_PLAYBACK_CONSUME = 1, DATASET_PLAYBACK_SINGLE = 2, DATASET_PLAYBACK_REPEAT = 3, DATASET_PLAYBACK_RANDOM = 2};
+
 typedef struct {
     enum state_t state;
     int elapsed_time;
@@ -32,6 +34,10 @@ typedef struct {
     char *song_album;
     int volume;
     int db_updating;
+    enum playback_t playback;
+    int bitrate; // bitrate of the current playing song in kbs. This is a constantly updating value. (for vbr songs)
+    int channels; // number of channels in the current playing song. This is usually only 1(mono) or 2(stereo)
+    unsigned int samplerate; // samplerate of the current playing song in bps.
 } dataset_t;
 
 void dataset_init(dataset_t *ds);
