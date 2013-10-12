@@ -35,6 +35,8 @@ static cairo_surface_t *pause_image;
 static cairo_surface_t *stop_image;
 static cairo_surface_t *database_image;
 static cairo_surface_t *volctrl_image;
+static cairo_surface_t *mono_image;
+static cairo_surface_t *stereo_image;
 
 static void picolcd_send(unsigned char *data, int size)
 {
@@ -192,6 +194,8 @@ int picolcd_init() {
     stop_image = cairo_image_surface_create_from_png("icons/stop.png");
     database_image = cairo_image_surface_create_from_png("icons/database.png");
     volctrl_image = cairo_image_surface_create_from_png("icons/volctrl.png");
+    mono_image = cairo_image_surface_create_from_png("icons/mono.png");
+    stereo_image = cairo_image_surface_create_from_png("icons/stereo.png");
 
     printf("PicoLCD: Scanning USB devices\n");
     usb_init();
@@ -272,6 +276,20 @@ void picolcd_update(dataset_t *ds) {
         cairo_paint (cr);
         cairo_restore(cr);
     }
+
+    if(ds->channels == 1) {
+        cairo_save(cr);
+        cairo_set_source_surface (cr, mono_image, 208, 0);
+        cairo_paint (cr);
+        cairo_restore(cr);        
+    } else if(ds->channels == 2) {
+        cairo_save(cr);
+        cairo_set_source_surface (cr, stereo_image, 208, 0);
+        cairo_paint (cr);
+        cairo_restore(cr);        
+    }
+
+
     if(ds->db_updating) {
         cairo_save(cr);
         cairo_set_source_surface (cr, database_image, 224, 0);
@@ -307,6 +325,7 @@ void picolcd_update(dataset_t *ds) {
             cairo_destroy (cr);
             picolcd_send_framebuffer(cairo_image_surface_get_data(surface));
             cairo_surface_destroy (surface);
+    //printf("bitrate=%dkbs samplerate=%dbps\n", ds->bitrate, ds->samplerate);
 }
 
 void picolcd_close() {

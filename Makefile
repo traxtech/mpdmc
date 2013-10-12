@@ -13,14 +13,14 @@ APP_LIBS = $(shell pkg-config --libs libmpd)
 APP_BIN = mpdmc
 
 # PicoLCD module
-#CFLAGS += -DWITH_PICOLCD $(shell pkg-config --cflags cairo-xlib libusb)
-#APP_OBJECTS += picolcd.o
-#APP_LIBS += $(shell pkg-config --libs cairo-xlib libusb)
+CFLAGS += -DWITH_PICOLCD $(shell pkg-config --cflags cairo-xlib libusb)
+APP_OBJECTS += picolcd.o
+APP_LIBS += $(shell pkg-config --libs cairo-xlib libusb)
 
 # Mosquitto module
-CFLAGS += -DWITH_MOSQUITTO
-APP_OBJECTS += mosquitto.o
-APP_LIBS += -lmosquitto
+#CFLAGS += -DWITH_MOSQUITTO
+#APP_OBJECTS += mosquitto.o
+#APP_LIBS += -lmosquitto
 
 .PHONY: all clean dep load_default
 
